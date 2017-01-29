@@ -2,26 +2,6 @@ import networkx as nx #Para a parte de criar e gerenciar grafos
 import numpy as np
 import matplotlib.pyplot as plt #Para exibir na tela
 
-# G = nx.read_gml('/home/felipe/pycharmprojects/Grafos/celegansneural.gml')
-G = nx.Graph()
-
-G.add_edge('a','b',weight=4)
-G.add_edge('a','h',weight=8)
-G.add_edge('b','c',weight=8)
-G.add_edge('b','h',weight=11)
-G.add_edge('c','d',weight=7)
-G.add_edge('c','i',weight=2)
-G.add_edge('c','f',weight=4)
-G.add_edge('d','e',weight=9)
-G.add_edge('d','f',weight=14)
-G.add_edge('e','f',weight=10)
-G.add_edge('f','g',weight=2)
-G.add_edge('g','i',weight=6)
-G.add_edge('g','h',weight=1)
-G.add_edge('h','i',weight=7)
-
-print(G.edge)
-
 def MST_Prim(G,r):
     Q = [] # Fila de prioridades
 
@@ -57,18 +37,25 @@ def MST_Prim(G,r):
     print(MST.edge)
     return MST
 
-MST = MST_Prim(G,'a')
+def main():
 
-pos = nx.circular_layout(G)
-nx.draw_networkx_nodes(G, pos, node_color = 'b')
-nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color='r', arrows=True)
+    G = nx.read_weighted_edgelist("/home/felipe/pycharmprojects/Grafos/testeEdgeList.txt")
 
-nx.draw_networkx_nodes(MST, pos, node_color = 'b')
-nx.draw_networkx_edges(MST, pos, edgelist=MST.edges(), edge_color='g', arrows=True)
+    MST = MST_Prim(G,'a')
 
-nx.draw_networkx_labels(G,pos,font_size=12)
+    pos = nx.circular_layout(G)
+    # nx.draw_networkx_nodes(G, pos, node_color = 'b')
+    # nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color='r', arrows=True)
 
-labels = nx.get_edge_attributes(G,'weight')
-nx.draw_networkx_edge_labels(G,pos,edge_labels=labels)
+    nx.draw_networkx_nodes(MST, pos, node_color = 'b')
+    nx.draw_networkx_edges(MST, pos, edgelist=MST.edges(), edge_color='g', arrows=True)
 
-plt.show()
+    nx.draw_networkx_labels(MST,pos,font_size=12)
+
+    labels = nx.get_edge_attributes(MST,'weight')
+    nx.draw_networkx_edge_labels(MST,pos,edge_labels=labels)
+
+    plt.show()
+
+if __name__=="__main__":
+    main()
