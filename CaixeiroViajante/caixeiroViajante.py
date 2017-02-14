@@ -18,7 +18,7 @@ def Desenha(G,pos,lineColor,filename):
 
 
 def MST_Prim(G,r):
-    Q = [] # Fila de prioridades
+    Q = []  # Fila de prioridades
 
     for v in G.nodes():
         if v is r:
@@ -29,7 +29,7 @@ def MST_Prim(G,r):
         G.node[v]['predecessor'] = None
         Q.append([v, G.node[v]['lambda']])
 
-    S = [] # Ja finalizados
+    S = []  # Ja finalizados
     while(Q):
         Q.sort(key=lambda item: item[1])
         u = Q.pop(0)
@@ -61,7 +61,6 @@ def TSP_TwiceAround(G):
     D.add_weighted_edges_from(T.edges(data=True))
 
     L = list(nx.eulerian_circuit(D,source=raiz)) # Lista com as arestas que formam um Tour de Euler
-    print("Tour de Euler extraido: "+str(L))
 
     # Com o Tour de Euler em seu formato apropriado, iniciamos o processo de eliminação de repetição de vértices
     peso = 0
@@ -73,21 +72,23 @@ def TSP_TwiceAround(G):
             u = D.get_edge_data(u,v)
             peso = peso + u[0]['weight']['weight']
 
-    print("Peso: "+str(peso))
-
     # Adiciona o vértice origem no final do caminho para completar o ciclo
     H.append(H[0])
 
-    return H
+    return L,H,peso
 
 def main():
+
     A = np.loadtxt('matriz.txt')
     G = nx.from_numpy_matrix(A)
-    for i in range(10):
-        print("Iteracao "+str(i+1))
-        cicloHamiltoniano = TSP_TwiceAround(G)
-        print("Ciclo Hamiltoniano Final: "+str(cicloHamiltoniano))
-        print("___________________________________________________________")
+    with open("resultado.txt", 'w') as arquivo:
+        for i in range(10):
+            arquivo.write("Iteracao "+str(i+1))
+            cicloHamiltoniano = TSP_TwiceAround(G)
+            arquivo.write("\nTour de Euler extraido: " + str(cicloHamiltoniano[0]))
+            arquivo.write("\nCiclo Hamiltoniano Final: "+str(cicloHamiltoniano[1]))
+            arquivo.write("\nPeso: " + str(cicloHamiltoniano[2]))
+            arquivo.write("\n___________________________________________________________\n")
 
 if __name__=='__main__':
     main()
