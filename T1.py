@@ -16,23 +16,25 @@ def distEstacionaria(G):
     print(E)
     w = []
     for node in G.edge:
-        w.append(len(G[node])/E) # Quando o grafo nao e direcionado divide-se por 2E, mas quando e divide-se por E apenas
+        # print(str(node)+": "+str(G.in_degree(node)))
+        w.append(G.in_degree(node)/E) # Quando o grafo nao e direcionado divide-se por 2E, mas quando e divide-se por E apenas
         #print(w)
 
     return w
 
 def powerMethod(G, w, k):
     P = matrizProbabilidade(G)
-
+    inicial = w
     for i in range(k):
-        w = w * P
-        #print(w)
+        inicial = np.dot(inicial, P)
 
-    return w
+        print(inicial) # Print para testar os resultados de cada iteracao
+        print(np.sum(inicial))
+
+    return inicial
 
 def main():
-    G = nx.DiGraph()
-    G.add_edges_from([(1, 3), (2, 1), (2, 4), (3, 2), (3, 4), (4, 3), (5, 1), (5, 3)])
+    G = nx.read_edgelist("/home/felipe/pycharmprojects/Grafos/mapeamentoSnakeAndLadders.txt", create_using=nx.DiGraph(), nodetype=int)
 
     P = matrizProbabilidade(G)
     print("Matriz de probabilidade:\n"+str(P))
@@ -40,14 +42,17 @@ def main():
     w = []
     n = G.number_of_nodes()
     for i in range(n):
-        w.append(1/n)
+        w.append(0)
+
+    w[0]=1
+
     print(w) # Teste de inicialização
-    A = powerMethod(G,w,100) # Precisamos verificar se os resultados estão corretos, há uma pequena divergencia
+    A = powerMethod(G,w,100) # TODO: Precisamos verificar se os resultados estão corretos, há uma pequena divergencia
 
     print("Power Method: "+str(A))
     print("Soma do power method: " + str(np.sum(A)))
     print("Distribuicao estacionaria: "+str(distEstacionaria(G)))
-    print(np.sum(distEstacionaria(G)))
+    print("Soma distribuicao: "+str(np.sum(distEstacionaria(G))))
 
     '''A = matrizProbabilidade(G)
     print(A)
