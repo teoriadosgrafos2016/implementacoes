@@ -1,10 +1,10 @@
-import networkx as nx #Para a parte de criar e gerenciar grafos
+import networkx as nx  # Para a parte de criar e gerenciar grafos
 import numpy as np
 from random import randint
-import matplotlib.pyplot as plt #Para exibir na tela
+import matplotlib.pyplot as plt  # Para exibir na tela
 
-def Desenha(G, pos,lineColor, filename):
 
+def Desenha(G,pos,lineColor,filename):
     nx.draw_networkx_nodes(G, pos, node_color='b', node_size=150)
     nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color=lineColor, arrows=True)
 
@@ -15,6 +15,7 @@ def Desenha(G, pos,lineColor, filename):
 
     plt.savefig(filename+'.png',dpi=250)
     plt.clf()
+
 
 def MST_Prim(G,r):
     Q = [] # Fila de prioridades
@@ -50,27 +51,43 @@ def MST_Prim(G,r):
     return MST
 
 def TSP_TwiceAround(G):
-    pos = nx.circular_layout(G)
-    # Desenha(G, pos, 'r', 'GrafoOriginal')
+    H = [] # Conjunto solução inicia vazio (será preenchido com o ciclo hamiltoniano)
 
-    H = []
-    raiz = randint(0,G.number_of_nodes()-1)
+    raiz = randint(0,G.number_of_nodes()-1) # Para calcular a MST no passo seguinte, escolhemos uma raiz aleatória
     T = MST_Prim(G, raiz) # MST do grafo
-    D = nx.MultiGraph()
-    # Desenha(T, pos, 'r', 'GrafoMST')
-    print(T.edge)
-    D.add_weighted_edges_from(T.edges(data=True))
-    D.add_weighted_edges_from(T.edges(data=True))
-    print(D.edge)
 
+    D = nx.MultiGraph()  # Para que seja possível duplicar as arestas, devido as arestas paralelas, é necessário utilizar um multigrafo
+    D.add_weighted_edges_from(T.edges(data=True))  # Duplicamos as arestas adicionando-as duas vezes no mesmo grafo
+    D.add_weighted_edges_from(T.edges(data=True))
+
+    L = list(nx.eulerian_circuit(D,source=raiz)) # Lista com as arestas que formam um Tour de Euler
+    print("Tour de Euler extraido: "+str(L))
+
+    # Com o Tour de Euler em seu formato apropriado, iniciamos o processo de eliminação de repetição de vértices
+    peso = 0
+    H.append(L[0][0])
+
+    for u,v in L:
+        if v not in H:
+            H.append(v)
+            u = D.get_edge_data(u,v)
+            peso = peso + u[0]['weight']['weight']
+
+    print("Peso: "+str(peso))
+
+    # Adiciona o vértice origem no final do caminho para completar o ciclo
+    H.append(H[0])
+
+    return H
 
 def main():
     A = np.loadtxt('matriz.txt')
     G = nx.from_numpy_matrix(A)
+    for i in range(10):
+        print("Iteracao "+str(i+1))
+        cicloHamiltoniano = TSP_TwiceAround(G)
+        print("Ciclo Hamiltoniano Final: "+str(cicloHamiltoniano))
+        print("___________________________________________________________")
 
-    print(G.edges(data=True))
-    TSP_TwiceAround(G)
 if __name__=='__main__':
     main()
-
-#--------------------------------------------------------------------#
