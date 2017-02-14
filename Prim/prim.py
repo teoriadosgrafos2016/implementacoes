@@ -2,11 +2,11 @@ import networkx as nx #Para a parte de criar e gerenciar grafos
 import numpy as np
 import matplotlib.pyplot as plt #Para exibir na tela
 
-def Dijkstra(G,raizes):
+def MST_Prim(G,r):
     Q = [] # Fila de prioridades
 
     for v in G.nodes():
-        if v in raizes:
+        if v is r:
             G.node[v]['lambda'] = 0
         else:
             G.node[v]['lambda'] = np.Infinity
@@ -21,31 +21,29 @@ def Dijkstra(G,raizes):
         S.append(u[0])
         for v in G.neighbors(u[0]):
             if (v not in S):
-                if (G.node[v]['lambda'] >= G.node[u[0]]['lambda'] + G.edge[u[0]][v]['weight']):
+                if (G.node[v]['lambda'] >= G.edge[u[0]][v]['weight']):
                     Q.remove([v, G.node[v]['lambda']])
-                    G.node[v]['lambda'] = G.node[u[0]]['lambda'] + G.edge[u[0]][v]['weight']
+                    G.node[v]['lambda'] = G.edge[u[0]][v]['weight']
                     G.node[v]['predecessor'] = u[0]
                     Q.append([v, G.node[v]['lambda']])
-
-    TREE = nx.Graph() # Cria-se um novo grafo com o resultado obtido
-    TREE.add_nodes_from(G.nodes())
+    MST = nx.Graph()
+    MST.add_nodes_from(G.nodes())
     for v in S:
         if G.node[v]['predecessor'] != None:
             u = G.node[v]['predecessor']
-            TREE.add_edge(v, u, weight=G.edge[v][u]['weight'])
+            MST.add_edge(v, u, weight=G.edge[v][u]['weight'])
 
-    return TREE
+    return MST
 
 def main():
 
-    G = nx.read_weighted_edgelist("/home/felipe/pycharmprojects/Grafos/Grafo.txt")
+    G = nx.read_weighted_edgelist("../Grafo.txt")
 
-    TREE = Dijkstra(G,['1','18'])
+    MST = MST_Prim(G,'1')
 
     pos = nx.circular_layout(G)
-
     Desenha(G, pos, 'r', 'GrafoOriginal')
-    Desenha(TREE, pos, 'g', 'AposDijkstra')
+    Desenha(MST, pos, 'g', 'MST')
 
 def Desenha(G, pos,lineColor, filename):
 
@@ -57,8 +55,8 @@ def Desenha(G, pos,lineColor, filename):
     labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, font_size=8)
 
-    plt.savefig('/home/felipe/pycharmprojects/Grafos/dijkstraImages/'+filename+'.png',dpi=250)
+    plt.savefig('primImages/'+filename+'.png',dpi=250)
     plt.clf()
 
-if __name__=='__main__':
+if __name__=="__main__":
     main()

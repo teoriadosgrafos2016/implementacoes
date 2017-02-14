@@ -16,25 +16,23 @@ def distEstacionaria(G):
     print(E)
     w = []
     for node in G.edge:
-        # print(str(node)+": "+str(G.in_degree(node)))
         w.append(G.in_degree(node)/E) # Quando o grafo nao e direcionado divide-se por 2E, mas quando e divide-se por E apenas
-        #print(w)
 
     return w
 
 def powerMethod(G, w, k):
     P = matrizProbabilidade(G)
-    inicial = w
+
     for i in range(k):
-        inicial = np.dot(inicial, P)
+        w = np.dot(w, P)
 
-        print(inicial) # Print para testar os resultados de cada iteracao
-        print(np.sum(inicial))
+        print(w) # Print para testar os resultados de cada iteracao
+        print(np.sum(w))
 
-    return inicial
+    return w
 
 def main():
-    G = nx.read_edgelist("/home/felipe/pycharmprojects/Grafos/mapeamentoSnakeAndLadders.txt", create_using=nx.DiGraph(), nodetype=int)
+    G = nx.read_edgelist("mapeamentoSnakeAndLadders.txt", create_using=nx.DiGraph(), nodetype=int)
 
     P = matrizProbabilidade(G)
     print("Matriz de probabilidade:\n"+str(P))
@@ -54,13 +52,13 @@ def main():
     print("Distribuicao estacionaria: "+str(distEstacionaria(G)))
     print("Soma distribuicao: "+str(np.sum(distEstacionaria(G))))
 
-    '''A = matrizProbabilidade(G)
+    A = matrizProbabilidade(G)
     print(A)
     pos = nx.spring_layout(G,k=0.15,iterations=20)
     nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_color = 'b')
     nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color='g', arrows=True)
     nx.draw_networkx_labels(G,pos,font_size=12)
-    plt.show()'''
+    plt.show()
 
 if __name__=="__main__":
     main()

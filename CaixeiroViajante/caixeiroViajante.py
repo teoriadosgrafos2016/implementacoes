@@ -1,6 +1,20 @@
 import networkx as nx #Para a parte de criar e gerenciar grafos
 import numpy as np
+from random import randint
 import matplotlib.pyplot as plt #Para exibir na tela
+
+def Desenha(G, pos,lineColor, filename):
+
+    nx.draw_networkx_nodes(G, pos, node_color='b', node_size=150)
+    nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color=lineColor, arrows=True)
+
+    nx.draw_networkx_labels(G, pos, font_size=8)
+
+    labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, font_size=8)
+
+    plt.savefig(filename+'.png',dpi=250)
+    plt.clf()
 
 def MST_Prim(G,r):
     Q = [] # Fila de prioridades
@@ -35,28 +49,28 @@ def MST_Prim(G,r):
 
     return MST
 
-def main():
-
-    G = nx.read_weighted_edgelist("/home/felipe/pycharmprojects/Grafos/Grafo.txt")
-
-    MST = MST_Prim(G,'1')
-
+def TSP_TwiceAround(G):
     pos = nx.circular_layout(G)
-    Desenha(G, pos, 'r', 'GrafoOriginal')
-    Desenha(MST, pos, 'g', 'MST')
+    # Desenha(G, pos, 'r', 'GrafoOriginal')
 
-def Desenha(G, pos,lineColor, filename):
+    H = []
+    raiz = randint(0,G.number_of_nodes()-1)
+    T = MST_Prim(G, raiz) # MST do grafo
+    D = nx.MultiGraph()
+    # Desenha(T, pos, 'r', 'GrafoMST')
+    print(T.edge)
+    D.add_weighted_edges_from(T.edges(data=True))
+    D.add_weighted_edges_from(T.edges(data=True))
+    print(D.edge)
 
-    nx.draw_networkx_nodes(G, pos, node_color='b', node_size=150)
-    nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color=lineColor, arrows=True)
 
-    nx.draw_networkx_labels(G, pos, font_size=8)
+def main():
+    A = np.loadtxt('matriz.txt')
+    G = nx.from_numpy_matrix(A)
 
-    labels = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, font_size=8)
-
-    plt.savefig('/home/felipe/pycharmprojects/Grafos/primImages/'+filename+'.png',dpi=250)
-    plt.clf()
-
-if __name__=="__main__":
+    print(G.edges(data=True))
+    TSP_TwiceAround(G)
+if __name__=='__main__':
     main()
+
+#--------------------------------------------------------------------#
