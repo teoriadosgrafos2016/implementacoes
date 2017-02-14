@@ -14,11 +14,9 @@ def MST_Prim(G,r):
         G.node[v]['predecessor'] = None
         Q.append([v, G.node[v]['lambda']])
 
-    print(Q)
     S = [] # Ja finalizados
     while(Q):
         Q.sort(key=lambda item: item[1])
-
         u = Q.pop(0)
         S.append(u[0])
         for v in G.neighbors(u[0]):
@@ -34,28 +32,31 @@ def MST_Prim(G,r):
         if G.node[v]['predecessor'] != None:
             u = G.node[v]['predecessor']
             MST.add_edge(v, u, weight=G.edge[v][u]['weight'])
-    print(MST.edge)
+
     return MST
 
 def main():
 
-    G = nx.read_weighted_edgelist("/home/felipe/pycharmprojects/Grafos/testeEdgeList.txt")
+    G = nx.read_weighted_edgelist("/home/felipe/pycharmprojects/Grafos/Grafo.txt")
 
-    MST = MST_Prim(G,'a')
+    MST = MST_Prim(G,'1')
 
     pos = nx.circular_layout(G)
-    # nx.draw_networkx_nodes(G, pos, node_color = 'b')
-    # nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color='r', arrows=True)
+    Desenha(G, pos, 'r', 'GrafoOriginal')
+    Desenha(MST, pos, 'g', 'MST')
 
-    nx.draw_networkx_nodes(MST, pos, node_color = 'b')
-    nx.draw_networkx_edges(MST, pos, edgelist=MST.edges(), edge_color='g', arrows=True)
+def Desenha(G, pos,lineColor, filename):
 
-    nx.draw_networkx_labels(MST,pos,font_size=12)
+    nx.draw_networkx_nodes(G, pos, node_color='b', node_size=150)
+    nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color=lineColor, arrows=True)
 
-    labels = nx.get_edge_attributes(MST,'weight')
-    nx.draw_networkx_edge_labels(MST,pos,edge_labels=labels)
+    nx.draw_networkx_labels(G, pos, font_size=8)
 
-    plt.show()
+    labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, font_size=8)
+
+    plt.savefig('/home/felipe/pycharmprojects/Grafos/primImages/'+filename+'.png',dpi=250)
+    plt.clf()
 
 if __name__=="__main__":
     main()
